@@ -421,6 +421,7 @@ class AXKeyValueMessage(AXMessage):
     def __init__(self):
         AXMessage.__init__(self)
         self.data = {}
+        self.aliases = None
 
     def addValue(self, type_uri, value):
         """Add a single value for the given attribute type to the
@@ -497,16 +498,17 @@ class AXKeyValueMessage(AXMessage):
         """
         self._checkMode(ax_args)
 
-        aliases = NamespaceMap()
+        if not self.aliases:
+            self.aliases = NamespaceMap()
 
         for key, value in ax_args.iteritems():
             if key.startswith('type.'):
                 type_uri = value
                 alias = key[5:]
                 checkAlias(alias)
-                aliases.addAlias(type_uri, alias)
+                self.aliases.addAlias(type_uri, alias)
 
-        for type_uri, alias in aliases.iteritems():
+        for type_uri, alias in self.aliases.iteritems():
             try:
                 count_s = ax_args['count.' + alias]
             except KeyError:
